@@ -8,13 +8,13 @@ ditherPat = (
     (3/48, 5/48, 7/48, 5/48, 3/48), 
     (1/48, 3/48, 5/48, 3/48, 1/48))
 
-autoRotate = True
-color = True
+# settings
+autoRotate = True       # automatically rotate the images to make them horizontal
+color = True            # try to recreate the color with dithering (1 bit color)
+density = density[2]    # which density pattern to use
 
-density = density[2]
 
 l = len(density)
-
 if (len(sys.argv) == 0 or not isfile(sys.argv[1])):
     raise Exception('please enter a valid file')
 ImageFile = Image.open(sys.argv[1], 'r')
@@ -82,34 +82,51 @@ if (color):
     print(r.shape)
     print(g.shape)
     print(b.shape)
+    lastColor=0
     for i in range(len(ycbcr)):
         for j in range(len(ycbcr[0])):
             if(r[i][j]):
                 if(g[i][j]):
                     if(b[i][j]):
-                        print("\u001b[37m",end='')
+                        if(lastColor != 7):
+                            lastColor = 7
+                            print("\u001b[37m",end='')
                     else:
-                        print("\u001b[33;1m",end='')
+                        if(lastColor != 3):
+                            lastColor = 3
+                            print("\u001b[33;1m",end='')
                 else:
                     if(b[i][j]):
-                        print("\u001b[35;1m",end='')
+                        if(lastColor != 5):
+                            lastColor = 5
+                            print("\u001b[35;1m",end='')
                     else:
-                        print("\u001b[31;1m",end='')
+                        if(lastColor != 1):
+                            lastColor = 1
+                            print("\u001b[31;1m",end='')
             else:
                 if(g[i][j]):
                     if(b[i][j]):
-                        print("\u001b[36;1m",end='')
+                        if(lastColor != 6):
+                            lastColor = 6
+                            print("\u001b[36;1m",end='')
                     else:
-                        print("\u001b[32;1m",end='')
+                        if(lastColor != 2):
+                            lastColor = 2
+                            print("\u001b[32;1m",end='')
                 else:
                     if(b[i][j]):
-                        print("\u001b[34;1m",end='')
+                        if(lastColor != 4):
+                            lastColor = 4
+                            print("\u001b[34;1m",end='')
                     else:
-                        print("\u001b[37m",end='')
+                        if(lastColor != 7):
+                            lastColor = 7
+                            print("\u001b[37m",end='')
             print(density[(l*ycbcr[i][j])//256],end='')
         print()
     print("\u001b[0m",end='')
-else:
+else: # no color
     for i in ycbcr:
         for j in i:
             print(density[(l*j)//256],end='')
