@@ -92,30 +92,47 @@ while True:
         g = g[0:-2, 2:-2]
         b = b[0:-2, 2:-2]
 
+        lastColor=0
         for i in range(len(ycbcr)):
             for j in range(len(ycbcr[0])):
                 if(r[i][j]):
                     if(g[i][j]):
                         if(b[i][j]):
-                            res+=("\u001b[37m")
+                            if(lastColor != 7):
+                                lastColor = 7
+                                res += ("\u001b[37m")
                         else:
-                            res+=("\u001b[33;1m")
+                            if(lastColor != 3):
+                                lastColor = 3
+                                res += ("\u001b[33;1m")
                     else:
                         if(b[i][j]):
-                            res+=("\u001b[35;1m")
+                            if(lastColor != 5):
+                                lastColor = 5
+                                res += ("\u001b[35;1m")
                         else:
-                            res+=("\u001b[31;1m")
+                            if(lastColor != 1):
+                                lastColor = 1
+                                res += ("\u001b[31;1m")
                 else:
                     if(g[i][j]):
                         if(b[i][j]):
-                            res+=("\u001b[36;1m")
+                            if(lastColor != 6):
+                                lastColor = 6
+                                res += ("\u001b[36;1m")
                         else:
-                            res+=("\u001b[32;1m")
+                            if(lastColor != 2):
+                                lastColor = 2
+                                res += ("\u001b[32;1m")
                     else:
                         if(b[i][j]):
-                            res+=("\u001b[34;1m")
+                            if(lastColor != 4):
+                                lastColor = 4
+                                res += ("\u001b[34;1m")
                         else:
-                            res+=("\u001b[37m")
+                            if(lastColor != 7):
+                                lastColor = 7
+                                res += ("\u001b[37m")
                 res+=(density[(l*ycbcr[i][j])//256])
             res+=('\n')
         res+=("\u001b[0m")
