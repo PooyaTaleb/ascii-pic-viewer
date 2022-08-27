@@ -20,8 +20,13 @@ size=240,66
 
 if (len(sys.argv) == 1 or not isfile(sys.argv[1])):
     raise Exception('please enter a valid file')
-if (len(sys.argv) == 3 and sys.argv[2] == '-m'): # since color makes the program slow you can force monochrome mode
-    color = False
+if (len(sys.argv) == 3 and sys.argv[2][0] == '-'): # since color makes the program slow you can force monochrome mode
+    if ('m' in sys.argv[2]):
+        color = False
+    if ('r' in sys.argv[2]):
+        autoRotate = False
+    if ('e' in sys.argv[2]):
+        endlessReplay = False
 
 
 l = len(density)
@@ -44,7 +49,6 @@ while True:
     tempSize = im.size[0],int(im.size[1]*0.5)
     im = im.resize(tempSize)
     im.thumbnail(size)
-    im = im.convert('YCbCr')
     ycbcr = np.array(im)[:,:,0]
     res=''
     if (color):
@@ -148,10 +152,9 @@ try:
     while True:
         for i in resString:
             print("\u001b[0;0H", end='')
-            print(i)
+            print(i, end='')
             sleep(t)
         if(not endlessReplay):
             break
 except EOFError:
-    endlessReplay = False
     print(resString[0])
