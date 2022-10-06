@@ -1,4 +1,5 @@
-from os.path import isfile
+
+from os.path import isfile, splitext
 from time import sleep
 from PIL import Image
 import numpy as np
@@ -14,6 +15,7 @@ ditherPat = (
 endlessReplay = True    # endlessly replay gifs or not
 density = density[2]    # which density pattern to use
 autoRotate = True       # automatically rotate the images to make them horizontal
+output = False          # create an image showing the output
 color = True            # try to recreate the color with dithering (1 bit color)
 size=240,66             
 
@@ -27,6 +29,8 @@ if (len(sys.argv) == 3 and sys.argv[2][0] == '-'): # since color makes the progr
         autoRotate = False
     if ('e' in sys.argv[2]):
         endlessReplay = False
+    if ('o' in sys.argv[2]):
+        output = True
 
 
 l = len(density)
