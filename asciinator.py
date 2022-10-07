@@ -1,9 +1,12 @@
+# note : some options are not implemented yet these include:
+#   queue & output
 
-from os.path import isfile, splitext
-from time import sleep
-from PIL import Image
-import numpy as np
-import sys
+from os.path import isfile, splitext    # checks for file existance and splits file names
+from time import sleep                  # to display gifs (adds delay between frames)
+from PIL import Image                   # to handle image manipulation
+import numpy as np                      # used for some calculations
+import sys                              # used for reading commandline arguments
+import os                               # used for capturing screenshots (for output)
 
 density = ("Ñ@#W$9876543210?!abc;:+=-,._                    ", "Ñ@#W$9876543210?!abc;:+=-,._ ", "  _.,-=+:;cba!?0123456789$W#@Ñ", "           _.,-=+:;cba!?0123456789$W#@Ñ", "        _.,-=+:;cba!?0123456789$W#@Ñ", "Ñ@#W$9876543210?!abc;:+=-,._  ", '       .:-i|=+%O#@', '        .:░▒▓█')
 ditherPat = (
@@ -17,6 +20,7 @@ density = density[2]    # which density pattern to use
 autoRotate = True       # automatically rotate the images to make them horizontal
 output = False          # create an image showing the output
 color = True            # try to recreate the color with dithering (1 bit color)
+queue = True            # show all files in some folder
 size=240,66             
 
 
@@ -31,6 +35,11 @@ if (len(sys.argv) == 3 and sys.argv[2][0] == '-'): # since color makes the progr
         endlessReplay = False
     if ('o' in sys.argv[2]):
         output = True
+        endlessReplay = False
+    if ('q' in sys.argv[2]):
+        queue = True
+        output = False
+        endlessReplay = False
 
 
 l = len(density)
@@ -150,15 +159,41 @@ while True:
                 res+=(density[(l*j)//256])
             res+=('\n')
     resString.append(res)
+flag = False
 try:
     ImageFile.seek(1)
+    flag = True
+except EOFError:
+    pass
+if(flag):
     t = ImageFile.info['duration'] / 1000
+    if(output):
+        ims = []
+        os.system("sudo echo ") # starts the internal sudo timer
+    frame = 0
     while True:
         for i in resString:
             print("\u001b[0;0H", end='')
             print(i, end='')
-            sleep(t)
+            if(output):
+                os.system("sudo fbcat > .temp"+str(frame)+".ppm")  
+                ims.append(Image.open('.temp'+str(frame)+'.ppm', 'r'))
+                frame+=1
+            else:
+                sleep(t)
         if(not endlessReplay):
             break
-except EOFError:
+    if(output):
+        if(isfile(splitext(sys.argv[1])[0]+"-asciified.gif")):
+            name = input('automaticly generated name taken. please enter name manually')
+            if(name == ''):
+                name = splitext(sys.argv[1])[0]+"-asciified.gif"
+            while(isfile(name)):
+                if(input('name taken. overwrite it? (y/n)): ').lower()=='y'):
+                    break
+                name = input('enter new name:')
+        else:
+            name = splitext(sys.argv[1])[0]+"-asciified.gif"
+        ims[0].save(name, save_all=True, append_images=ims[1:], duration=t, loop = 0)
+else:
     print(resString[0])
