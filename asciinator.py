@@ -195,5 +195,6 @@ if(flag):
         else:
             name = splitext(sys.argv[1])[0]+"-asciified.gif"
         ims[0].save(name, save_all=True, append_images=ims[1:], duration=t, loop = 0)
+        os.system("rm .temp*")  
 else:
     print(resString[0])
