@@ -1,10 +1,11 @@
 # note : some options are not implemented yet these include:
-#   queue & output
+#   queue & camera
 
 from os.path import isfile, splitext    # checks for file existance and splits file names
 from time import sleep                  # to display gifs (adds delay between frames)
 from PIL import Image                   # to handle image manipulation
 import numpy as np                      # used for some calculations
+import cv2                              # used for taking pictures
 import sys                              # used for reading commandline arguments
 import os                               # used for capturing screenshots (for output)
 
@@ -24,26 +25,32 @@ queue = True            # show all files in some folder
 size=240,66             
 
 
-if (len(sys.argv) == 1 or not isfile(sys.argv[1])):
+if (len(sys.argv) >= 2 and (not isfile(sys.argv[1])) and sys.argv[1][0] != '-'):
     raise Exception('please enter a valid file')
-if (len(sys.argv) == 3 and sys.argv[2][0] == '-'): # since color makes the program slow you can force monochrome mode
-    if ('m' in sys.argv[2]):
+if (len(sys.argv) >= 2 and sys.argv[-1][0] == '-'): # you can use these to change options for this time only
+    if ('m' in sys.argv[-1]): # monochrome mode
         color = False
-    if ('r' in sys.argv[2]):
+    if ('r' in sys.argv[-1]): # autoRotate off
         autoRotate = False
-    if ('e' in sys.argv[2]):
+    if ('e' in sys.argv[-1]): # looped animation off (only show animated files once)
         endlessReplay = False
-    if ('o' in sys.argv[2]):
+    if ('o' in sys.argv[-1]): # output the results as a file
         output = True
         endlessReplay = False
-    if ('q' in sys.argv[2]):
+    if ('q' in sys.argv[-1]): # show all images in a queue (not implemented yet)
         queue = True
         output = False
         endlessReplay = False
 
 
 l = len(density)
-ImageFile = Image.open(sys.argv[1], 'r')
+if (len(sys.argv) > 2):                                                         # open image if image address is given
+    ImageFile = Image.open(sys.argv[1], 'r')
+else:                                                                           # otherwise use camera
+    result, ImageFile = cv2.VideoCapture(0) .read() 
+    ImageFile = Image.fromarray(cv2.cvtColor(ImageFile, cv2.COLOR_BGR2RGB))
+    print(result)
+
 resString = []
 curFrame = 0
 flag = False
