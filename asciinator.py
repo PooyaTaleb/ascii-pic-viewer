@@ -44,7 +44,7 @@ if (len(sys.argv) >= 2 and sys.argv[-1][0] == '-'): # you can use these to chang
 
 
 l = len(density)
-if (len(sys.argv) > 2):                                                         # open image if image address is given
+if (len(sys.argv) >= 2 and sys.argv[1][0] != '-'):
     ImageFile = Image.open(sys.argv[1], 'r')
 else:                                                                           # otherwise use camera
     result, ImageFile = cv2.VideoCapture(0) .read() 
