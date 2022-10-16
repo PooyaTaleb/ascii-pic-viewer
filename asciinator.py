@@ -49,7 +49,6 @@ if (len(sys.argv) >= 2 and sys.argv[1][0] != '-'):
 else:                                                                           # otherwise use camera
     result, ImageFile = cv2.VideoCapture(0) .read() 
     ImageFile = Image.fromarray(cv2.cvtColor(ImageFile, cv2.COLOR_BGR2RGB))
-    print(result)
 
 resString = []
 curFrame = 0
@@ -69,7 +68,7 @@ while True:
     tempSize = im.size[0],int(im.size[1]*0.5)
     im = im.resize(tempSize)
     im.thumbnail(size)
-    ycbcr = np.array(im)[:,:,0]
+    ycbcr = (np.array(im)[:,:,0] / 256 * l ).astype(int)
     res=''
     if (color):
         im = im.convert('RGB')
@@ -157,13 +156,13 @@ while True:
                             if(lastColor != 7):
                                 lastColor = 7
                                 res += ("\u001b[37m")
-                res+=(density[(l*ycbcr[i][j])//256])
+                res+=(density[(ycbcr[i][j])])
             res+=('\n')
         res+=("\u001b[0m")
     else:
         for i in ycbcr:
             for j in i:
-                res+=(density[(l*j)//256])
+                res+=(density[j])
             res+=('\n')
     resString.append(res)
 flag = False
@@ -204,4 +203,4 @@ if(flag):
         ims[0].save(name, save_all=True, append_images=ims[1:], duration=t, loop = 0)
         os.system("rm .temp*")  
 else:
-    print(resString[0])
+    print(resString[0],end = '')
